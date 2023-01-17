@@ -1,7 +1,7 @@
 <template>
   <q-layout view="lHh Lpr lFf">
     <q-header elevated>
-      <q-toolbar>
+      <!-- <q-toolbar>
         <q-btn
           flat
           dense
@@ -16,7 +16,7 @@
         </q-toolbar-title>
 
         <div>Quasar v{{ $q.version }}</div>
-      </q-toolbar>
+      </q-toolbar> -->
     </q-header>
 
     <q-drawer
@@ -28,7 +28,7 @@
         <q-item-label
           header
         >
-          Essential Links
+          Chamados Links
         </q-item-label>
 
         <EssentialLink
@@ -51,46 +51,40 @@ import EssentialLink from 'components/EssentialLink.vue'
 
 const linksList = [
   {
-    title: 'Docs',
-    caption: 'quasar.dev',
-    icon: 'school',
-    link: 'https://quasar.dev'
+    title: 'Stats',
+    caption: '',
+    icon: 'dashboard',
+    route: { name: 'stats' }
   },
   {
-    title: 'Github',
-    caption: 'github.com/quasarframework',
-    icon: 'code',
-    link: 'https://github.com/quasarframework'
+    title: 'Abrir Chamados',
+    caption: '',
+    icon: 'question_answer',
+    route: { name: 'abrirChamado' }
   },
   {
-    title: 'Discord Chat Channel',
-    caption: 'chat.quasar.dev',
-    icon: 'chat',
-    link: 'https://chat.quasar.dev'
+    title: 'Situação de Chamados',
+    caption: '',
+    icon: 'task',
+    route: { name: 'situacaoChamado' }
   },
   {
-    title: 'Forum',
-    caption: 'forum.quasar.dev',
-    icon: 'record_voice_over',
-    link: 'https://forum.quasar.dev'
+    title: 'Gerenciar fila',
+    caption: '',
+    icon: 'manage_accounts',
+    route: { name: 'gerenciarFila' }
   },
   {
-    title: 'Twitter',
-    caption: '@quasarframework',
-    icon: 'rss_feed',
-    link: 'https://twitter.quasar.dev'
+    title: 'Priorizar Chamados',
+    caption: '',
+    icon: 'upload',
+    route: { name: 'priorizarChamado' }
   },
   {
-    title: 'Facebook',
-    caption: '@QuasarFramework',
-    icon: 'public',
-    link: 'https://facebook.quasar.dev'
-  },
-  {
-    title: 'Quasar Awesome',
-    caption: 'Community Quasar projects',
-    icon: 'favorite',
-    link: 'https://awesome.quasar.dev'
+    title: 'Relatórios',
+    caption: '',
+    icon: 'file_copy',
+    route: { name: 'relatorios' }
   }
 ]
 

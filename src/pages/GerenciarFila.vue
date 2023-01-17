@@ -1,6 +1,6 @@
 <template>
   <q-page class="container">
-    <h1>Stats</h1>
+    <h1>Gerenciar Fila</h1>
 
   </q-page>
 </template>
@@ -11,9 +11,7 @@ import { defineComponent } from 'vue'
 export default defineComponent({
   name: 'IndexPage',
   setup () {
-    return {
 
-    }
   }
 })
 </script>
@@ -21,5 +19,5 @@ export default defineComponent({
 <style lang="sass" scoped>
 .my-card
   width: 100%
-  max-width: 250px
+  max-width: 300px
 </style>

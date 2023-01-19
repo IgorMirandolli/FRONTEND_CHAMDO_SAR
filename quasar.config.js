@@ -10,7 +10,7 @@
 
 const { configure } = require('quasar/wrappers')
 
-module.exports = configure(function (/* ctx */) {
+module.exports = configure(function (ctx) {
   return {
     eslint: {
       // fix: true,
@@ -29,7 +29,8 @@ module.exports = configure(function (/* ctx */) {
     // https://v2.quasar.dev/quasar-cli/boot-files
     boot: [
 
-      'axios'
+      'axios',
+      'apex'
     ],
 
     // https://v2.quasar.dev/quasar-cli-vite/quasar-config-js#css
@@ -58,7 +59,13 @@ module.exports = configure(function (/* ctx */) {
         node: 'node16'
       },
 
-      vueRouterMode: 'history' // available values: 'hash', 'history'
+      vueRouterMode: 'history', // available values: 'hash', 'history'
+
+      env: {
+        API_URL: ctx.dev
+          ? 'http://localhost:3002/'
+          : 'http://localhost:3003/'
+      }
       // vueRouterBase,
       // vueDevtools,
       // vueOptionsAPI: false,

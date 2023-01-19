@@ -1,7 +1,7 @@
 <template>
   <q-layout view="lHh Lpr lFf">
     <q-header elevated>
-      <!-- <q-toolbar>
+      <q-toolbar>
         <q-btn
           flat
           dense
@@ -12,11 +12,11 @@
         />
 
         <q-toolbar-title>
-          Quasar App
+          Chamados
         </q-toolbar-title>
 
-        <div>Quasar v{{ $q.version }}</div>
-      </q-toolbar> -->
+        <div>DEGTI {{ dataAtual  }}</div>
+      </q-toolbar>
     </q-header>
 
     <q-drawer
@@ -48,6 +48,7 @@
 <script>
 import { defineComponent, ref } from 'vue'
 import EssentialLink from 'components/EssentialLink.vue'
+import moment from 'moment'
 
 const linksList = [
   {
@@ -90,16 +91,16 @@ const linksList = [
 
 export default defineComponent({
   name: 'MainLayout',
-
   components: {
     EssentialLink
   },
 
   setup () {
     const leftDrawerOpen = ref(false)
-
+    const dataAtual = moment(Date.now()).format('DD/MM/YYYY')
     return {
       essentialLinks: linksList,
+      dataAtual,
       leftDrawerOpen,
       toggleLeftDrawer () {
         leftDrawerOpen.value = !leftDrawerOpen.value

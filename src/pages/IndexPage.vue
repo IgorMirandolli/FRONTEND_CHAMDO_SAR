@@ -41,8 +41,6 @@ export default defineComponent({
       }
     }
 
-    console.log(abertos.value)
-
     const options = {
       chart: {
         id: 'vuechart-example'

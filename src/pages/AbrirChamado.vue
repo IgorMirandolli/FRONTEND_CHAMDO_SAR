@@ -55,13 +55,13 @@
 
             <div class="row q-pb-sm">
               <div class="col-3">
-                <q-select standout="bg-blue text-white" v-model="model" :options="options" label="Selecione o Sistema" />
+                <q-select standout="bg-blue text-white" v-model="model" :options="options" :label="categoria" />
               </div>
             </div>
 
             <div class="row q-pb-sm">
               <div class="col-3">
-                <q-select standout="bg-blue text-white" v-model="model" :options="options" label="Módulo" />
+                <q-select standout="bg-blue text-white" v-model="model" :options="options" label="Sub-Categoria" />
               </div>
             </div>
 
@@ -102,6 +102,7 @@
 
 <script>
 import { defineComponent, ref } from 'vue'
+import { api } from 'src/boot/axios'
 // import Abertura from 'src/layouts/Abertura.vue'
 
 export default defineComponent({
@@ -109,31 +110,44 @@ export default defineComponent({
   // components: { Abertura },
   data () {
     return {
-      abertura: ref(null),
-      options: [
-        'Google', 'Facebook', 'Twitter', 'Apple', 'Oracle'
-      ],
+      abertura: ref('Abrindo chamado para:'),
+      categoria: ref('Selecione a categoria'),
+      options: ref(null),
       model: ref(null),
       files: ref(null)
     }
   },
 
   watch: {
-    abertura (texto) {
-      console.log(texto)
-    }
   },
 
   methods: {
+    getCategoria: async (opcao) => {
+      try {
+        const { data } = await api.get('/categorias/superior/' + opcao)
+        this.options.value = data
+        // data.forEach(e => {
+        //   console.log(data)
+        //   this.options.value.push(e.ds_categoria)
+        // })
+      } catch (e) {
+        console.error(e)
+      }
+    },
     escolha (escolha) {
       if (escolha === 'sistemas') {
         this.abertura = 'Sistemas'
+        this.categoria = 'Selecione o Sistema'
+        this.getCategoria(1)
       } else if (escolha === 'equip') {
         this.abertura = 'Equipamentos/Softwares'
+        this.categoria = 'Selecione o Equip/Soft'
       } else if (escolha === 'infra') {
         this.abertura = 'Infraestrutura/Redes'
+        this.categoria = 'Selecione uma opção'
       } else if (escolha === 'gerais') {
         this.abertura = 'Serviços Gerais'
+        this.categoria = 'Selecione uma opção'
       }
       // console.log(this.abertura)
     }

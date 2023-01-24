@@ -49,13 +49,13 @@
 
             <div class="row q-pb-sm">
               <div class="col-3">
-                <q-input standout="bg-blue text-white" v-model="text" autogrow label="Pra quem é o chamado?"/>
+                <q-input standout="bg-blue text-white" v-model="cd_colaborador" autogrow label="Pra quem é o chamado?"/>
               </div>
             </div>
 
             <div class="row q-pb-sm">
               <div class="col-3">
-                <q-select standout="bg-blue text-white" v-model="model" :options="options" :label="categoria" />
+                <q-select standout="bg-blue text-white" :options="categorias" :label="categoria" />
               </div>
             </div>
 
@@ -112,6 +112,7 @@ export default defineComponent({
     return {
       abertura: ref('Abrindo chamado para:'),
       categoria: ref('Selecione a categoria'),
+      categorias: ref([null]),
       options: ref(null),
       model: ref(null),
       files: ref(null)
@@ -124,12 +125,10 @@ export default defineComponent({
   methods: {
     getCategoria: async (opcao) => {
       try {
-        const { data } = await api.get('/categorias/superior/' + opcao)
-        this.options.value = data
-        // data.forEach(e => {
-        //   console.log(data)
-        //   this.options.value.push(e.ds_categoria)
-        // })
+        await api.get('/categorias/superior/' + opcao)
+          .then(res => {
+            this.categorias = res.data.data
+          })
       } catch (e) {
         console.error(e)
       }

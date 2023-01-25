@@ -35,7 +35,7 @@ export default defineComponent({
           atendimentos.value.push(e.nr_chamados_atendimentos)
           reabertos.value.push(e.nr_chamados_reabertos)
           datas.value.push(moment(e.dt_atualizacao).format('DD/MM/YYYY'))
-        })//
+        })
       } catch (e) {
         console.error(e)
       }

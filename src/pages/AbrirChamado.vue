@@ -56,7 +56,7 @@
             <div class="row q-pb-sm">
               <div class="col-3">
                 <q-select standout="bg-blue  text-white" transition-show="flip-up" transition-hide="flip-down"
-                filled v-model="idCategorias" :options="categorias" :label="categoria" />
+                filled @update:model-value="escolha('subcategoria')" v-model="idCategorias" :options="supCategorias" :label="categoria" />
               </div>
             </div>
 
@@ -110,47 +110,22 @@ export default defineComponent({
   name: 'IndexPage',
   // components: { Abertura },
 
-  // data () {
-  //   return {
-  //     idCategorias: ref(null)
-  //   }
-  // },
-
-  watch: {
-    idCategorias (idCategorias) {
-      console.log(idCategorias.value)
-    }
-  },
-
   setup () {
     const files = null
     const model = null
     const categoria = ref('Selecione a categoria')
-    const idCategorias = ref(null)
-    const categorias = ref([])
-
-    const subCategorias = ref([])
     const abertura = ref('Abrindo chamado para:')
-
-    const getCategoria = async (opcao) => {
-      try {
-        const { data } = await api.get('categorias/superior/' + opcao)
-        categorias.value = data.map(e => {
-          return {
-            value: e.id_categoria,
-            label: e.ds_categoria
-          }
-        })
-      } catch (e) {
-        console.error(e)
-      }
-    }
+    const idCategorias = ref(null)
+    const idSubCategorias = ref(null)
+    const categorias = ref([])
+    const supCategorias = ref([])
+    const subCategorias = ref([])
 
     const escolha = (escolha) => {
       if (escolha === 'sistemas') {
         abertura.value = 'Sistemas'
         categoria.value = 'Selecione o Sistema'
-        getCategoria(1)
+        // supCategorias = categorias.filter(superior => categorias.id_categoria_superior = null)
       } else if (escolha === 'equip') {
         abertura.value = 'Equipamentos/Softwares'
         categoria.value = 'Selecione o Equip/Soft'
@@ -160,11 +135,35 @@ export default defineComponent({
       } else if (escolha === 'gerais') {
         abertura.value = 'Serviços Gerais'
         categoria.value = 'Selecione uma opção'
-      }
+      } else if (escolha === 'subcategoria') { /* empty */ }
     }
     return {
-      categoria, categorias, abertura, escolha, subCategorias, files, model, idCategorias
+      categoria, categorias, supCategorias, abertura, escolha, subCategorias, files, model, idCategorias, idSubCategorias
     }
+  },
+
+  watch: {
+    page () {
+    }
+  },
+
+  methods: {
+    async getCategorias () {
+      try {
+        await api.get('categorias').then(res => {
+          this.categorias = res.data.map(category => {
+            return { ...category, value: category.id_categoria, text: category.ds_categoria }
+          })
+        })
+        console.log(this.categorias)
+      } catch (e) {
+        console.error(e)
+      }
+    }
+  },
+
+  mounted () {
+    this.getCategorias()
   }
 
 })

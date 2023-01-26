@@ -86,6 +86,12 @@ const linksList = [
     caption: '',
     icon: 'file_copy',
     route: { name: 'relatorios' }
+  },
+  {
+    title: 'Gerenciar Categorias',
+    caption: '',
+    icon: 'file_copy',
+    route: { name: 'categorias' }
   }
 ]
 

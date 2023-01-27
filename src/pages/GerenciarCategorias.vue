@@ -50,13 +50,20 @@ export default defineComponent({
       }
     }
 
-    const handleDeleteCategorias = async (id) => {
+    const handleDeleteCategorias = (id) => {
       try {
-        await remove(id)
-        $q.notify({ message: 'Categoria excluída com sucesso.', icon: 'check', color: 'positive' })
-        await getCategorias()
+        $q.dialog({
+          title: 'EXCLUSÃO',
+          message: 'Deseja realmente excluir esta categoria?',
+          cancel: true,
+          persistent: true
+        }).onOk(async () => {
+          await remove(id)
+          $q.notify({ message: 'Categoria excluída com sucesso.', icon: 'check', color: 'positive', position: 'top-right' })
+          await getCategorias()
+        })
       } catch (e) {
-        alert(e)
+        $q.notify({ message: 'Erro ao excluir categoria.', icon: 'times', color: 'negative', position: 'top-right' })
       }
     }
 

@@ -68,7 +68,9 @@
 
             <div class="row q-pb-sm">
               <div class="col-3">
-                <q-input standout="bg-blue text-white" autogrow label="Descrição do chamado"/>
+                <!-- <q-input standout="bg-blue text-white" autogrow label="Descrição do chamado"/> -->
+                <q-editor v-model="editor" min-height="5rem" />
+
               </div>
             </div>
 
@@ -102,15 +104,15 @@
 </template>
 
 <script>
-import { defineComponent, ref } from 'vue'
-import { api } from 'src/boot/axios'
-// import Abertura from 'src/layouts/Abertura.vue'
+import { defineComponent, onMounted, ref } from 'vue'
+import categoriasService from 'src/services/categorias'
 
 export default defineComponent({
   name: 'IndexPage',
   // components: { Abertura },
 
   setup () {
+    const { list } = categoriasService()
     const files = null
     const model = null
     const categoria = ref('Selecione a categoria')
@@ -120,6 +122,20 @@ export default defineComponent({
     const categorias = ref([])
     const supCategorias = ref([])
     const subCategorias = ref([])
+    const editor = ref('What you see is <b>what</b> you get.')
+
+    onMounted(() => {
+      getCategorias()
+    })
+
+    const getCategorias = async () => {
+      try {
+        const data = await list()
+        categorias.value = data
+      } catch (e) {
+        console.error(e)
+      }
+    }
 
     const escolha = (escolha) => {
       if (escolha === 'sistemas') {
@@ -138,35 +154,21 @@ export default defineComponent({
       } else if (escolha === 'subcategoria') { /* empty */ }
     }
     return {
-      categoria, categorias, supCategorias, abertura, escolha, subCategorias, files, model, idCategorias, idSubCategorias
+      categoria,
+      categorias,
+      supCategorias,
+      abertura,
+      escolha,
+      subCategorias,
+      files,
+      model,
+      idCategorias,
+      idSubCategorias,
+      editor
     }
-  },
-
-  watch: {
-    page () {
-    }
-  },
-
-  methods: {
-    async getCategorias () {
-      try {
-        await api.get('categorias').then(res => {
-          this.categorias = res.data.map(category => {
-            return { ...category, value: category.id_categoria, text: category.ds_categoria }
-          })
-        })
-        console.log(this.categorias)
-      } catch (e) {
-        console.error(e)
-      }
-    }
-  },
-
-  mounted () {
-    this.getCategorias()
   }
-
 })
+
 </script>
 
 <style lang="sass" scoped>

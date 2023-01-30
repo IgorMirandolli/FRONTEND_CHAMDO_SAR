@@ -56,7 +56,7 @@
             <div class="row q-pb-sm">
               <div class="col-3">
                 <q-select standout="bg-blue  text-white" transition-show="flip-up" transition-hide="flip-down"
-                filled @update:model-value="escolha('subcategoria')" v-model="idCategorias" :options="supCategorias" :label="categoria" />
+                filled @update:model-value="escolha('subcategoria')" v-model="idCategorias" :options="categorias" :label="categoria" />
               </div>
             </div>
 
@@ -90,8 +90,8 @@
             <div class="row q-pb-sm">
               <div class="col-3">
                 <div>
-                  <q-btn label="Submit" type="submit" color="primary"/>
                   <q-btn label="Reset" type="reset" color="primary" flat class="q-ml-sm" />
+                  <q-btn label="Submit" type="submit" color="primary"/>
                 </div>
               </div>
             </div>

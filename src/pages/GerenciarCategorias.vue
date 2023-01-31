@@ -1,36 +1,43 @@
 <template>
   <q-page padding>
-    <q-form
-      @submit="onSubmit"
-      @reset="onReset"
-    >
-      <q-table
-        title="Categorias"
-        rows-per-page-label="Categoria por página"
-        :rows-per-page-options="[10, 20]"
-        :rows="categorias"
-        :columns="columns"
-        row-key="name"
+    <q-table
+    title="Categorias"
+    rows-per-page-label="Categoria por página"
+    :rows-per-page-options="[10, 20]"
+    :rows="categorias"
+    :columns="columns"
+    row-key="name"
+    :filter="filter"
       >
       <template v-slot:top>
         <span class="text-h5">Categorias</span>
         <q-space />
-          <q-btn color="primary" label="Nova Categoria" @click="prompt = true" />
+        <q-input borderless dense debounce="300" v-model="filter" placeholder="Pesquisa">
+          <template v-slot:append>
+            <q-icon name="search" />
+          </template>
+        </q-input>
+        <q-space />
+        <q-btn color="primary" label="Nova Categoria" @click="prompt = true" />
       </template>
-        <template v-slot:body-cell-actions="props">
-          <q-td :props="props">
-            <q-btn icon="delete" color="negative" dense size="sm" @click="handleDeleteCategorias(props.row.id_categoria)"/>
-          </q-td>
-        </template>
+      <template v-slot:body-cell-actions="props">
+        <q-td :props="props">
+          <q-btn icon="delete" color="negative" dense size="sm" @click="handleDeleteCategorias(props.row.id_categoria)"/>
+        </q-td>
+      </template>
     </q-table>
 
-    <q-dialog v-model="prompt" >
-        <q-card style="min-width: 350px">
-          <q-card-section>
-            <div class="text-h6">Adicionar Categoria</div>
-          </q-card-section>
+    <q-dialog v-model="prompt" no-backdrop-dismiss>
+      <q-card style="min-width: 350px">
+        <q-form
+        @submit="onSubmit"
+        @reset="onReset"
+        >
+        <q-card-section>
+          <div class="text-h6">Adicionar Categoria</div>
+        </q-card-section>
 
-          <q-card-section class="q-pt-none">
+        <q-card-section class="q-pt-none">
             <q-select
             outlined
             v-model="idCategoriaSuperior"
@@ -43,16 +50,16 @@
             outlined
             v-model="dsCategoria"
             label="Subcategoria"
-            :rules="[val =>val && val.length >= 3 || 'Preencha a subcategoria' ]"
+            :rules="[val =>val && val.length >= 3 || 'Subcategoria deve ter pelo menos 3 caracteres' ]"
             />
           </q-card-section>
 
           <q-card-actions align="right" class="text-primary">
             <q-btn
               label="Cancelar"
-              v-close-popup
               icon="cancel"
               type="reset"
+              v-close-popup
               />
             <q-btn
               label="Salvar"
@@ -62,11 +69,11 @@
               v-close-popup
             />
           </q-card-actions>
+        </q-form>
         </q-card>
       </q-dialog>
 
-    </q-form>
-  </q-page>
+    </q-page>
 </template>
 
 <script>
@@ -80,18 +87,21 @@ export default defineComponent({
   name: 'GerenciarCategorias',
 
   setup () {
-    const { list, remove, post } = categoriasService()
+    const { list, remove } = categoriasService()
     const idCategoriaSuperior = ref(null)
+    const filter = ref('')
+    const loading = ref(false)
     const dsCategoria = ref(null)
     const idCategorias = ref(null)
     const $q = useQuasar()
     const categorias = ref([])
-    const categoria = ref([])
+    const categoria = ref({})
     const options = ref([])
     const columns = [
       { name: 'id_categoria', field: 'id_categoria', label: 'Id. Categoria', sortable: true, align: 'left' },
-      { name: 'id_categoria_superior', field: 'id_categoria_superior', label: 'Id. Categoria Superior', sortable: true, align: 'left' },
       { name: 'ds_categoria', field: 'ds_categoria', label: 'Categoria', sortable: true, align: 'left' },
+      { name: 'id_categoria_superior', field: 'id_categoria_superior', label: 'Id. Categoria Superior', sortable: true, align: 'left' },
+      { name: 'ds_categoria_superior', field: 'ds_categoria_superior', label: 'Categoria Superior', sortable: true, align: 'left' },
       { name: 'actions', field: 'actions', label: 'Ações', align: 'right' }
     ]
 
@@ -130,23 +140,29 @@ export default defineComponent({
     }
 
     const onSubmit = async () => {
+      loading.value = true
       console.log('entrou')
-      try {
-        this.categotia.st_categoria = 'A'
-        this.categotia.id_categoria_superior = idCategoriaSuperior
-        this.categotia.ds_categoria = dsCategoria
-        console.log(categoria)
-        await post(categoria)
-        await getCategorias()
-        $q.notify({
-          color: 'green-4',
-          textColor: 'white',
-          icon: 'cloud_done',
-          message: 'Categoria Salva'
-        })
-      } catch (error) {
+      categoria.value.st_categoria = 'A'
+      categoria.value.id_categoria_superior = idCategoriaSuperior.value
+      categoria.value.ds_categoria = dsCategoria.value
 
-      }
+      // await post(categoria.value)
+      await api.post('categorias', categoria.value)
+        .then(() => {
+          $q.notify({
+            color: 'positive',
+            textColor: 'white',
+            icon: 'cloud_done',
+            message: 'Categoria Salva',
+            position: 'top-right'
+          })
+        })
+        .catch(error => {
+          $q.notify({ message: error.msg, icon: 'times', color: 'negative', position: 'top-right' })
+        })
+
+      await getCategorias()
+      loading.value = false
     }
 
     const onReset = () => {
@@ -162,13 +178,15 @@ export default defineComponent({
       prompt: ref(false),
       address: ref(''),
       text: ref(''),
+      filter,
       idCategorias,
       options,
-      onSubmit,
       categoria,
       onReset,
+      onSubmit,
       idCategoriaSuperior,
-      dsCategoria
+      dsCategoria,
+      loading
     }
   }
 

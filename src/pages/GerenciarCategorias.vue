@@ -147,19 +147,21 @@ export default defineComponent({
       categoria.value.ds_categoria = dsCategoria.value
 
       // await post(categoria.value)
-      await api.post('categorias', categoria.value)
-        .then(() => {
-          $q.notify({
-            color: 'positive',
-            textColor: 'white',
-            icon: 'cloud_done',
-            message: 'Categoria Salva',
-            position: 'top-right'
+      try {
+        await api.post('categorias', categoria.value)
+          .then(() => {
+            $q.notify({
+              color: 'positive',
+              textColor: 'white',
+              icon: 'cloud_done',
+              message: 'Categoria Salva',
+              position: 'top-right'
+            })
           })
-        })
-        .catch(error => {
-          $q.notify({ message: error.msg, icon: 'times', color: 'negative', position: 'top-right' })
-        })
+      } catch (error) {
+        console.log(error.response.data)
+        $q.notify({ message: error.response.data, icon: 'times', color: 'negative', position: 'top-right' })
+      }
 
       await getCategorias()
       loading.value = false

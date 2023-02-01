@@ -87,7 +87,7 @@ export default defineComponent({
   name: 'GerenciarCategorias',
 
   setup () {
-    const { list, remove } = categoriasService()
+    const { list } = categoriasService()
     const idCategoriaSuperior = ref(null)
     const filter = ref('')
     const loading = ref(false)
@@ -130,18 +130,18 @@ export default defineComponent({
           cancel: true,
           persistent: false
         }).onOk(async () => {
-          await remove(id)
+          await api.delete('categorias', id)
           $q.notify({ message: 'Categoria excluída com sucesso.', icon: 'check', color: 'positive', position: 'top-right' })
           await getCategorias()
         })
-      } catch (e) {
-        $q.notify({ message: 'Erro ao excluir categoria.', icon: 'times', color: 'negative', position: 'top-right' })
+      } catch (error) {
+        console.log(error)
+        $q.notify({ message: error.response.data, icon: 'times', color: 'negative', position: 'top-right' })
       }
     }
 
     const onSubmit = async () => {
       loading.value = true
-      console.log('entrou')
       categoria.value.st_categoria = 'A'
       categoria.value.id_categoria_superior = idCategoriaSuperior.value
       categoria.value.ds_categoria = dsCategoria.value
@@ -157,9 +157,10 @@ export default defineComponent({
               message: 'Categoria Salva',
               position: 'top-right'
             })
+            onReset()
           })
       } catch (error) {
-        console.log(error.response.data)
+        onReset()
         $q.notify({ message: error.response.data, icon: 'times', color: 'negative', position: 'top-right' })
       }
 
@@ -168,9 +169,9 @@ export default defineComponent({
     }
 
     const onReset = () => {
-      this.categoria.value = null
-      this.idCategoriaSuperior = null
-      this.dsCategoria = null
+      categoria.value = null
+      idCategoriaSuperior.value = null
+      dsCategoria.value = null
     }
 
     return {

@@ -22,7 +22,8 @@
       </template>
       <template v-slot:body-cell-actions="props">
         <q-td :props="props">
-          <q-btn icon="delete" color="negative" dense size="sm" @click="handleDeleteCategorias(props.row.id_categoria)"/>
+          <q-btn icon="delete" color="negative" dense size="sm" @click="handleSituacaoCategorias(props.row.id_categoria, 'I')"/>
+          <q-btn icon="done" color="positive" dense size="sm" @click="handleSituacaoCategorias(props.row.id_categoria, 'A')"/>
         </q-td>
       </template>
     </q-table>
@@ -87,7 +88,7 @@ export default defineComponent({
   name: 'GerenciarCategorias',
 
   setup () {
-    const { list } = categoriasService()
+    const { list, remove, put } = categoriasService()
     const idCategoriaSuperior = ref(null)
     const filter = ref('')
     const loading = ref(false)
@@ -98,6 +99,7 @@ export default defineComponent({
     const categoria = ref({})
     const options = ref([])
     const columns = [
+      { name: 'situacao', field: 'situacao', label: 'Situação', sortable: true, align: 'left' },
       { name: 'id_categoria', field: 'id_categoria', label: 'Id. Categoria', sortable: true, align: 'left' },
       { name: 'ds_categoria', field: 'ds_categoria', label: 'Categoria', sortable: true, align: 'left' },
       { name: 'id_categoria_superior', field: 'id_categoria_superior', label: 'Id. Categoria Superior', sortable: true, align: 'left' },
@@ -122,22 +124,34 @@ export default defineComponent({
       }
     }
 
-    const handleDeleteCategorias = (id) => {
-      try {
-        $q.dialog({
-          title: 'EXCLUSÃO',
-          message: 'Deseja realmente excluir esta categoria?',
-          cancel: true,
-          persistent: false
-        }).onOk(async () => {
-          await api.delete('categorias', id)
-          $q.notify({ message: 'Categoria excluída com sucesso.', icon: 'check', color: 'positive', position: 'top-right' })
-          await getCategorias()
-        })
-      } catch (error) {
-        console.log(error)
-        $q.notify({ message: error.response.data, icon: 'times', color: 'negative', position: 'top-right' })
-      }
+    const handleSituacaoCategorias = (id, sit) => {
+      $q.dialog({
+        title: sit === 'A' ? 'ATIVAÇÃO' : 'INATIVAÇÃO',
+        message: 'Deseja alterar a situação da categoria?',
+        cancel: true,
+        persistent: false
+      }).onOk(async () => {
+        // await api.remove('categorias', id)
+        if (sit === 'I') {
+          await remove(id)
+            .then(() => {
+              $q.notify({ message: 'Categoria alterada com sucesso.', icon: 'check', color: 'positive', position: 'top-right' })
+            })
+            .catch($q.notify({ message: 'Categoria possui subcategorias.', icon: 'warning', color: 'negative', position: 'top-right' }))
+        } else {
+          categoria.value.st_categoria = 'Ativa'
+          await put('categorias', categoria.value)
+            .then(() => {
+              $q.notify({ message: 'Categoria alterada com sucesso.', icon: 'check', color: 'positive', position: 'top-right' })
+            })
+            .catch($q.notify({ message: 'Categoria possui subcategorias.', icon: 'warning', color: 'negative', position: 'top-right' }))
+        }
+        // .catch(err => {
+        //   console.log(err.response)
+        //   $q.notify({ message: err.response.data.msg, icon: 'warning', color: 'negative', position: 'top-right' })
+        // })
+        await getCategorias()
+      })
     }
 
     const onSubmit = async () => {
@@ -157,13 +171,13 @@ export default defineComponent({
               message: 'Categoria Salva',
               position: 'top-right'
             })
-            onReset()
           })
       } catch (error) {
-        onReset()
+        console.log(error)
         $q.notify({ message: error.response.data, icon: 'times', color: 'negative', position: 'top-right' })
       }
 
+      onReset()
       await getCategorias()
       loading.value = false
     }
@@ -177,7 +191,7 @@ export default defineComponent({
     return {
       categorias,
       columns,
-      handleDeleteCategorias,
+      handleSituacaoCategorias,
       prompt: ref(false),
       address: ref(''),
       text: ref(''),

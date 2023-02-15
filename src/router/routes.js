@@ -9,7 +9,7 @@ const routes = [
       { path: 'situacaoChamado', name: 'situacaoChamado', component: () => import('pages/SituacaoChamado.vue') },
       { path: 'gerenciarFila', name: 'gerenciarFila', component: () => import('pages/GerenciarFila.vue') },
       { path: 'priorizarChamado', name: 'priorizarChamado', component: () => import('pages/PriorizarChamado.vue') },
-      { path: 'relatorios', name: 'relatorios', component: () => import('pages/Relatorios.vue') },
+      { path: 'relatorios', name: 'relatorios', component: () => import('src/pages/RelatoriosPage.vue') },
       { path: 'categorias', name: 'categorias', component: () => import('pages/GerenciarCategorias.vue') }
     ]
   },

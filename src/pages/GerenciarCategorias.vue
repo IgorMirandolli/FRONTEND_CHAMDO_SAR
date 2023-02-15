@@ -152,6 +152,9 @@ export default defineComponent({
             })
         } else {
           // console.log('Ativação > ' + id)
+          categoria.value = {
+            st_categoria: 'Ativa'
+          }
           categoria.value.st_categoria = 'Ativa'
           await api.put(`categorias/${id}`, categoria.value)
             .then(() => {

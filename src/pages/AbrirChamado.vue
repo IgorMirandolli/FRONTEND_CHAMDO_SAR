@@ -49,7 +49,7 @@
 
             <div class="row q-pb-sm">
               <div class="col-3">
-                <q-input standout="bg-blue text-white" autogrow label="Pra quem é o chamado?"/>
+                <q-input standout="bg-blue text-white" autogrow label="Responsável"/>
               </div>
             </div>
 
@@ -106,6 +106,7 @@
 <script>
 import { defineComponent, onMounted, ref } from 'vue'
 import categoriasService from 'src/services/categorias'
+import { api } from 'boot/axios'
 
 export default defineComponent({
   name: 'IndexPage',
@@ -130,8 +131,12 @@ export default defineComponent({
 
     const getCategorias = async () => {
       try {
-        const data = await list()
-        categorias.value = data
+        const response = await list()
+        categorias.value = response
+        const { data } = await api.get('categorias/master')
+        categorias.value = data.map(categorias => {
+          return { value: categorias.id_categoria, label: categorias.ds_categoria }
+        })
       } catch (e) {
         console.error(e)
       }

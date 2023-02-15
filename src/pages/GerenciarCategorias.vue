@@ -21,10 +21,18 @@
         <q-btn color="primary" label="Nova Categoria" @click="prompt = true" />
       </template>
       <template v-slot:body-cell-actions="props">
-        <q-td :props="props">
-          <q-btn icon="delete" color="negative" dense size="sm" @click="handleSituacaoCategorias(props.row.id_categoria, 'I')"/>
-          <q-btn icon="done" color="positive" dense size="sm" @click="handleSituacaoCategorias(props.row.id_categoria, 'A')"/>
-        </q-td>
+          <q-td
+            :props="props"
+            :class="(props.row.st_categoria=='Inativa')?'bg-accent text-white':'bg-white text-black'"
+            class="wrapper"
+          >
+            <q-btn icon="delete" color="negative" dense size="sm" @click="handleSituacaoCategorias(props.row.id_categoria, 'I')">
+              <q-tooltip anchor="bottom middle" self="top middle">Inativar</q-tooltip>
+            </q-btn>
+            <q-btn icon="done" color="positive" dense size="sm" @click="handleSituacaoCategorias(props.row.id_categoria, 'A')">
+              <q-tooltip anchor="bottom middle" self="top middle">Ativar</q-tooltip>
+            </q-btn>
+          </q-td>
       </template>
     </q-table>
 
@@ -88,7 +96,7 @@ export default defineComponent({
   name: 'GerenciarCategorias',
 
   setup () {
-    const { list, remove, put } = categoriasService()
+    const { list, remove } = categoriasService()
     const idCategoriaSuperior = ref(null)
     const filter = ref('')
     const loading = ref(false)
@@ -99,12 +107,12 @@ export default defineComponent({
     const categoria = ref({})
     const options = ref([])
     const columns = [
-      { name: 'situacao', field: 'situacao', label: 'Situação', sortable: true, align: 'left' },
       { name: 'id_categoria', field: 'id_categoria', label: 'Id. Categoria', sortable: true, align: 'left' },
       { name: 'ds_categoria', field: 'ds_categoria', label: 'Categoria', sortable: true, align: 'left' },
       { name: 'id_categoria_superior', field: 'id_categoria_superior', label: 'Id. Categoria Superior', sortable: true, align: 'left' },
       { name: 'ds_categoria_superior', field: 'ds_categoria_superior', label: 'Categoria Superior', sortable: true, align: 'left' },
-      { name: 'actions', field: 'actions', label: 'Ações', align: 'right' }
+      { name: 'situacao', field: 'situacao', label: 'Situação', sortable: true, align: 'left' },
+      { name: 'actions', field: 'actions', label: 'Ações', align: 'center' }
     ]
 
     onMounted(() => {
@@ -116,11 +124,12 @@ export default defineComponent({
         const response = await list()
         categorias.value = response
         const { data } = await api.get('categorias/master')
+        // console.log(categorias.value)
         options.value = data.map(categorias => {
           return { value: categorias.id_categoria, label: categorias.ds_categoria }
         })
       } catch (e) {
-        console.error(e)
+        // console.error(e)
       }
     }
 
@@ -133,18 +142,24 @@ export default defineComponent({
       }).onOk(async () => {
         // await api.remove('categorias', id)
         if (sit === 'I') {
+          // console.log('Inativação')
           await remove(id)
             .then(() => {
               $q.notify({ message: 'Categoria alterada com sucesso.', icon: 'check', color: 'positive', position: 'top-right' })
             })
-            .catch($q.notify({ message: 'Categoria possui subcategorias.', icon: 'warning', color: 'negative', position: 'top-right' }))
+            .catch(() => {
+              $q.notify({ message: 'Categoria possui subcategorias.', icon: 'warning', color: 'negative', position: 'top-right' })
+            })
         } else {
+          // console.log('Ativação > ' + id)
           categoria.value.st_categoria = 'Ativa'
-          await put('categorias', categoria.value)
+          await api.put(`categorias/${id}`, categoria.value)
             .then(() => {
               $q.notify({ message: 'Categoria alterada com sucesso.', icon: 'check', color: 'positive', position: 'top-right' })
             })
-            .catch($q.notify({ message: 'Categoria possui subcategorias.', icon: 'warning', color: 'negative', position: 'top-right' }))
+            .catch(() => {
+              $q.notify({ message: 'Categoria possui subcategorias.', icon: 'warning', color: 'negative', position: 'top-right' })
+            })
         }
         // .catch(err => {
         //   console.log(err.response)
@@ -156,10 +171,11 @@ export default defineComponent({
 
     const onSubmit = async () => {
       loading.value = true
-      categoria.value.st_categoria = 'A'
-      categoria.value.id_categoria_superior = idCategoriaSuperior.value
-      categoria.value.ds_categoria = dsCategoria.value
-
+      categoria.value = {
+        st_categoria: 'Ativa',
+        id_categoria_superior: idCategoriaSuperior.value,
+        ds_categoria: dsCategoria.value
+      }
       // await post(categoria.value)
       try {
         await api.post('categorias', categoria.value)
@@ -172,8 +188,8 @@ export default defineComponent({
               position: 'top-right'
             })
           })
+        onReset()
       } catch (error) {
-        console.log(error)
         $q.notify({ message: error.response.data, icon: 'times', color: 'negative', position: 'top-right' })
       }
 
@@ -211,5 +227,10 @@ export default defineComponent({
 </script>
 
 <style>
-
+.wrapper {
+   display: grid;
+   grid-template-columns: repeat(2, 1fr);
+   grid-column-gap: 3px;
+   grid-row-gap: 1em;
+}
 </style>

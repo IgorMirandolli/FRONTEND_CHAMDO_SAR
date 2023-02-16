@@ -1,14 +1,14 @@
 <template>
   <q-page padding>
     <q-table
-    title="Categorias"
-    rows-per-page-label="Categoria por página"
-    :rows-per-page-options="[10, 20]"
-    :rows="categorias"
-    :columns="columns"
-    row-key="name"
-    :filter="filter"
-      >
+      title="Categorias"
+      rows-per-page-label="Categoria por página"
+      :rows-per-page-options="[10, 20, 30]"
+      :rows="categorias"
+      :columns="columns"
+      row-key="name"
+      :filter="filter"
+    >
       <template v-slot:top>
         <span class="text-h5">Categorias</span>
         <q-space />
@@ -17,70 +17,38 @@
             <q-icon name="search" />
           </template>
         </q-input>
-        <q-space />
-        <q-btn color="primary" label="Nova Categoria" @click="prompt = true" />
       </template>
-      <template v-slot:body-cell-actions="props">
-          <q-td
+
+      <template v-slot:header="props">
+        <q-tr :props="props">
+          <q-th auto-width />
+          <q-th
+            v-for="col in props.cols"
+            :key="col.name"
             :props="props"
-            :class="(props.row.st_categoria=='Inativa')?'bg-accent text-white':'bg-white text-black'"
-            class="wrapper"
           >
-            <q-btn icon="delete" color="negative" dense size="sm" @click="handleSituacaoCategorias(props.row.id_categoria, 'I')">
-              <q-tooltip anchor="bottom middle" self="top middle">Inativar</q-tooltip>
-            </q-btn>
-            <q-btn icon="done" color="positive" dense size="sm" @click="handleSituacaoCategorias(props.row.id_categoria, 'A')">
-              <q-tooltip anchor="bottom middle" self="top middle">Ativar</q-tooltip>
-            </q-btn>
-          </q-td>
+            {{ col.label }}
+          </q-th>
+        </q-tr>
       </template>
+
+      <template v-slot:body="props">
+        <q-tr :props="props">
+          <q-td auto-width>
+            <q-btn size="sm" color="accent" round dense @click="props.expand = !props.expand" :icon="props.expand ? 'remove' : 'add'" />
+          </q-td>
+          <q-td v-for="col in props.cols" :key="col.name" :props="props" >
+            {{ col.value }}
+          </q-td>
+        </q-tr>
+        <q-tr v-show="props.expand" :props="props">
+          <q-td colspan="100%">
+            <div class="text-left">This is expand slot for row above: {{ props.row.ds_categoria }}.</div>
+          </q-td>
+        </q-tr>
+      </template>
+
     </q-table>
-
-    <q-dialog v-model="prompt" no-backdrop-dismiss>
-      <q-card style="min-width: 350px">
-        <q-form
-        @submit="onSubmit"
-        @reset="onReset"
-        >
-        <q-card-section>
-          <div class="text-h6">Adicionar Categoria</div>
-        </q-card-section>
-
-        <q-card-section class="q-pt-none">
-            <q-select
-            outlined
-            v-model="idCategoriaSuperior"
-            :options="options"
-            emit-value
-            :rules="[val => val || 'Escolha uma categoria superior' ]"
-            map-options label="Categorias" />
-            <br>
-            <q-input
-            outlined
-            v-model="dsCategoria"
-            label="Subcategoria"
-            :rules="[val =>val && val.length >= 3 || 'Subcategoria deve ter pelo menos 3 caracteres' ]"
-            />
-          </q-card-section>
-
-          <q-card-actions align="right" class="text-primary">
-            <q-btn
-              label="Cancelar"
-              icon="cancel"
-              type="reset"
-              v-close-popup
-              />
-            <q-btn
-              label="Salvar"
-              color="primary"
-              icon="save"
-              type="submit"
-              v-close-popup
-            />
-          </q-card-actions>
-        </q-form>
-        </q-card>
-      </q-dialog>
 
     </q-page>
 </template>
@@ -96,7 +64,7 @@ export default defineComponent({
   name: 'GerenciarCategorias',
 
   setup () {
-    const { list, remove } = categoriasService()
+    const { remove } = categoriasService()
     const idCategoriaSuperior = ref(null)
     const filter = ref('')
     const loading = ref(false)
@@ -109,9 +77,9 @@ export default defineComponent({
     const columns = [
       { name: 'id_categoria', field: 'id_categoria', label: 'Id. Categoria', sortable: true, align: 'left' },
       { name: 'ds_categoria', field: 'ds_categoria', label: 'Categoria', sortable: true, align: 'left' },
-      { name: 'id_categoria_superior', field: 'id_categoria_superior', label: 'Id. Categoria Superior', sortable: true, align: 'left' },
-      { name: 'ds_categoria_superior', field: 'ds_categoria_superior', label: 'Categoria Superior', sortable: true, align: 'left' },
-      { name: 'situacao', field: 'situacao', label: 'Situação', sortable: true, align: 'left' },
+      // { name: 'id_categoria_superior', field: 'id_categoria_superior', label: 'Id. Categoria Superior', sortable: true, align: 'left' },
+      // { name: 'ds_categoria_superior', field: 'ds_categoria_superior', label: 'Categoria Superior', sortable: true, align: 'left' },
+      { name: 'st_categoria', field: 'st_categoria', label: 'Situação', sortable: true, align: 'left' },
       { name: 'actions', field: 'actions', label: 'Ações', align: 'center' }
     ]
 
@@ -121,8 +89,9 @@ export default defineComponent({
 
     const getCategorias = async () => {
       try {
-        const response = await list()
-        categorias.value = response
+        const response = await api.get('categorias/master')
+        categorias.value = response.data
+        console.log(categorias.value)
         const { data } = await api.get('categorias/master')
         // console.log(categorias.value)
         options.value = data.map(categorias => {

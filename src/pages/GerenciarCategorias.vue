@@ -6,8 +6,7 @@
       :rows-per-page-options="[10, 20, 30]"
       :rows="categorias"
       :columns="columns"
-      row-key="name"
-      :filter="filter"
+      row-key="id_categoria"
     >
       <template v-slot:top>
         <span class="text-h5">Categorias</span>
@@ -29,6 +28,7 @@
           >
             {{ col.label }}
           </q-th>
+          <q-th auto-width>Ações</q-th>
         </q-tr>
       </template>
 
@@ -37,8 +37,14 @@
           <q-td auto-width>
             <q-btn size="sm" color="accent" round dense @click="props.expand = !props.expand" :icon="props.expand ? 'remove' : 'add'" />
           </q-td>
-          <q-td v-for="col in props.cols" :key="col.name" :props="props" >
-            {{ col.value }}
+          <q-td key="id_categoria" :props="props" >
+            {{ props.row.id_categoria }}
+          </q-td>
+          <q-td key="ds_categoria" :props="props" >
+            {{ props.row.ds_categoria }}
+          </q-td>
+          <q-td key="st_categoria" :props="props" >
+            {{ props.row.st_categoria }}
           </q-td>
           <q-td auto-width>
             <q-btn icon="delete" color="negative" dense size="sm" @click="handleSituacaoCategorias(props.row.id_categoria, 'I')">
@@ -51,45 +57,9 @@
         </q-tr>
         <q-tr v-show="props.expand" :props="props">
           <q-td colspan="100%">
-            <q-table
-              rows-per-page-label="Categoria por página"
-              :rows-per-page-options="[10, 20, 30]"
-              :rows="categoriasSuperior1"
-              :columns="columns"
-              row-key="name"
-              :filter="filter"
-            >
-
-              <template v-slot:header="props">
-                <q-tr :props="props">
-                  <q-th auto-width />
-                  <q-th
-                    v-for="col in props.cols"
-                    :key="col.name"
-                    :props="props"
-                  >
-                    {{ col.label }}
-                  </q-th>
-                </q-tr>
-              </template>
-
-              <template v-slot:body="props">
-                <q-tr :props="props">
-                  <q-td auto-width>
-                    <q-btn size="sm" color="blue" round dense @click="props.expand = !props.expand" :icon="props.expand ? 'remove' : 'add'" />
-                  </q-td>
-                  <q-td v-for="col in props.cols" :key="col.name" :props="props" >
-                    {{ col.value }}
-                  </q-td>
-                </q-tr>
-                <q-tr v-show="props.expand" :props="props">
-                  <q-td colspan="100%">
-                    <div class="text-left">This is expand slot for row above: {{ props.row.ds_categoria }}.</div>
-                  </q-td>
-                </q-tr>
-              </template>
-
-            </q-table>
+            <div class="text-left">
+              Expanded
+            </div>
           </q-td>
         </q-tr>
       </template>
@@ -126,8 +96,7 @@ export default defineComponent({
       { name: 'ds_categoria', field: 'ds_categoria', label: 'Categoria', sortable: true, align: 'left' },
       // { name: 'id_categoria_superior', field: 'id_categoria_superior', label: 'Id. Categoria Superior', sortable: true, align: 'left' },
       // { name: 'ds_categoria_superior', field: 'ds_categoria_superior', label: 'Categoria Superior', sortable: true, align: 'left' },
-      { name: 'st_categoria', field: 'st_categoria', label: 'Situação', sortable: true, align: 'left' },
-      { name: 'actions', field: 'actions', label: 'Ações', align: 'center' }
+      { name: 'st_categoria', field: 'st_categoria', label: 'Situação', sortable: true, align: 'left' }
     ]
 
     onMounted(() => {

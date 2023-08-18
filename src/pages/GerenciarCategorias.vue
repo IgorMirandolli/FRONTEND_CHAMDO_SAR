@@ -3,7 +3,7 @@
     <q-table
       title="Categorias"
       rows-per-page-label="Categoria por página"
-      :rows-per-page-options="[10, 20, 30]"
+      :rows-per-page-options="[5,10,20,30]"
       :rows="categorias"
       :columns="columns"
       row-key="id_categoria"
@@ -35,7 +35,7 @@
       <template v-slot:body="props">
         <q-tr :props="props">
           <q-td auto-width>
-            <q-btn size="sm" color="accent" round dense @click="props.expand = !props.expand" :icon="props.expand ? 'remove' : 'add'" />
+            <q-btn size="sm" color="teal-8" round dense @click="getCategorias(props.row.id_categoria), props.expand = !props.expand" :icon="props.expand ? 'remove' : 'add'" />
           </q-td>
           <q-td key="id_categoria" :props="props" >
             {{ props.row.id_categoria }}
@@ -58,7 +58,52 @@
         <q-tr v-show="props.expand" :props="props">
           <q-td colspan="100%">
             <div class="text-left">
-              Expanded
+              <q-table
+                rows-per-page-label="Categoria por página"
+                :rows="categoriasSuperior"
+                :columns="columns"
+                row-key="id_categoria"
+              >
+                <template v-slot:header="props">
+                  <q-tr :props="props">
+                    <q-th auto-width />
+                    <q-th
+                      v-for="col in props.cols"
+                      :key="col.name"
+                      :props="props"
+                    >
+                      {{ col.label }}
+                    </q-th>
+                    <q-th auto-width>Ações</q-th>
+                  </q-tr>
+                </template>
+
+                <template v-slot:body="props">
+                  <q-tr :props="props">
+                    <q-td auto-width>
+                      <q-btn size="sm" color="teal-3" round dense @click="props.expand = !props.expand" :icon="props.expand ? 'remove' : 'add'" />
+                    </q-td>
+                    <q-td key="id_categoria" :props="props" >
+                      {{ props.row.id_categoria }}
+                    </q-td>
+                    <q-td key="ds_categoria" :props="props" >
+                      {{ props.row.ds_categoria }}
+                    </q-td>
+                    <q-td key="st_categoria" :props="props" >
+                      {{ props.row.st_categoria }}
+                    </q-td>
+                  </q-tr>
+                  <q-tr v-show="props.expand" :props="props">
+                    <q-td colspan="100%">
+                      <div class="text-left">
+                        Expanded
+                      </div>
+                    </q-td>
+                  </q-tr>
+                </template>
+
+              </q-table>
+
             </div>
           </q-td>
         </q-tr>
@@ -88,7 +133,7 @@ export default defineComponent({
     const idCategorias = ref(null)
     const $q = useQuasar()
     const categorias = ref([])
-    const categoriasSuperior1 = ref([])
+    const categoriasSuperior = ref([])
     const categoria = ref({})
     const options = ref([])
     const columns = [
@@ -103,13 +148,14 @@ export default defineComponent({
       getCategorias()
     })
 
-    const getCategorias = async () => {
+    const getCategorias = async (id) => {
       try {
         let response = await api.get('categorias/master')
         categorias.value = response.data
-        response = await api.get('categorias/superior/1')
-        categoriasSuperior1.value = response.data
-        console.log(categoriasSuperior1.value)
+        console.log('categorias > ' + categorias.value)
+        response = await api.get('categorias/superior/' + id)
+        categoriasSuperior.value = response.data
+        console.log('categoria superior > ' + categoriasSuperior.value)
       } catch (e) {
         console.error(e)
       }
@@ -205,7 +251,8 @@ export default defineComponent({
       idCategoriaSuperior,
       dsCategoria,
       loading,
-      categoriasSuperior1
+      categoriasSuperior,
+      getCategorias
     }
   }
 

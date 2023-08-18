@@ -43,7 +43,7 @@
           <q-td auto-width>
             <q-btn icon="delete" color="negative" dense size="sm" @click="handleSituacaoCategorias(props.row.id_categoria, 'I')">
               <q-tooltip anchor="bottom middle" self="top middle">Inativar</q-tooltip>
-            </q-btn>
+            </q-btn>''
             <q-btn icon="done" color="positive" dense size="sm" @click="handleSituacaoCategorias(props.row.id_categoria, 'A')">
               <q-tooltip anchor="bottom middle" self="top middle">Ativar</q-tooltip>
             </q-btn>

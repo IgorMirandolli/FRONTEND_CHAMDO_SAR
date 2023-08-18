@@ -3,6 +3,7 @@ import { api } from 'boot/axios'
 export default function useApi (url) {
   const list = async () => {
     try {
+      console.log(url)
       const { data } = await api.get(url)
       return data
     } catch (e) {

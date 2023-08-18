@@ -1,119 +1,95 @@
 <template>
-  <q-page class="container">
+    <q-page padding>
+      <div class="row justify-center">
 
-        <div class="q-pa-md row items-start q-gutter-md">
-          <q-card class="my-card">
-            <q-img style="cursor: pointer;" @click="escolha('equip')" src="../assets/images/equipamentos_softwares.png">
-              <div class="absolute-bottom">
-                <div class="text-h6">Equipamentos/Softwares</div>
-              </div>
-            </q-img>
-          </q-card>
-          <q-card class="my-card">
-            <q-img style="cursor: pointer;" @click="escolha('infra')" src="../assets/images/infra_redes.png">
-              <div class="absolute-bottom">
-                <div class="text-h6">Infraestretura/Redes</div>
-              </div>
-            </q-img>
-          </q-card>
-          <q-card class="my-card">
-            <q-img style="cursor: pointer;" @click="escolha('sistemas')" src="../assets/images/sistemas.png">
-              <div class="absolute-bottom">
-                <div class="text-h6">Sistemas</div>
-              </div>
-            </q-img>
-          </q-card>
-          <q-card class="my-card">
-            <q-img style="cursor: pointer;" @click="escolha('gerais')"  src="../assets/images/serviços_gerais.png">
-              <div class="absolute-bottom">
-                <div class="text-h6">Serviços Gerais</div>
-              </div>
-            </q-img>
-          </q-card>
-        </div>
+              <q-table
+                :rows="categories"
+                :columns="columnsCategories"
+                row-key="id"
+                :loading="loading"
+                grid
+                hide-pagination
+              >
 
-        <q-form action="https://some-url.com" method="post" @submit.prevent="onSubmit">
+                <template v-slot:item="props">
+                  <transition-group
+                    appear
+                    enter-active-class="animated fadeInLeft"
+                    leave-active-class="animated fadeOutRight"
+                  >
+                    <div class="example-item q-pa-xs col-xs-12 col-sm-6 col-md-3" key="card">
+                      <q-card class="cursor-pointer" >
+                        <q-img :src="props.row.img_url" :ratio="4/3" @click="escolha(props.row)">
+                          <div class="absolute-bottom text-subtitle2 text-center">
+                            {{ props.row.ds_categoria }}
+                          </div>
+                        </q-img >
+                      </q-card>
+                    </div>
+                  </transition-group>
+                </template>
 
-          <div class="q-pa-md doc-container">
+            </q-table>
 
-            <div class="row q-pb-sm">
-              <div class="col-3">
-                <q-card class="my-card_1 text-white"
-                  style=" text-align: center; background: radial-gradient(circle, #35a2ff 0%, #014a88 100%)">
-                  <q-card-section>
-                    <div class="text-h6">{{ abertura }}</div>
-                  </q-card-section>
-                </q-card>
-              </div>
-            </div>
+      </div>
+      <br>
 
-            <div class="row q-pb-sm">
-              <div class="col-3">
-                <q-input standout="bg-blue text-white" autogrow label="Responsável"/>
-              </div>
-            </div>
+    <!-- <q-form class="row justify-center" @submit.prevent="onSubmit"> -->
+    <q-form class="row justify-center">
 
-            <div class="row q-pb-sm">
-              <div class="col-3">
-                <q-select standout="bg-blue  text-white" transition-show="flip-up" transition-hide="flip-down"
-                filled @update:model-value="escolha('subcategoria')" v-model="idCategorias" :options="categorias" :label="categoria" />
-              </div>
-            </div>
+      <div class="col-md-5 col-sm-6 col-xs-10 q-gutter-y-md">
 
-            <div class="row q-pb-sm">
-              <div class="col-3">
-                <q-select standout="bg-blue text-white" v-model="idSubCategorias" :options="subCategorias" label="Sub-Categoria" />
-              </div>
-            </div>
+        <q-card class="my-card_1 text-white"
+          style=" text-align: center; background: radial-gradient(circle, #35a2ff 0%, #014a88 100%)">
+          <q-card-section>
+            <div class="text-h6">{{ abertura }}</div>
+          </q-card-section>
+        </q-card>
 
-            <div class="row q-pb-sm">
-              <div class="col-3">
-                <!-- <q-input standout="bg-blue text-white" autogrow label="Descrição do chamado"/> -->
-                <q-editor v-model="editor" min-height="5rem" />
+        <q-input standout="bg-blue text-white" autogrow label="Responsável"/>
 
-              </div>
-            </div>
+        <q-select standout="bg-blue  text-white" transition-show="flip-up" transition-hide="flip-down"
+        filled @update:model-value="escolha('subcategoria')" v-model="idCategorias" :options="categorias" :label="categoria" />
 
-            <div class="row q-pb-sm">
-              <div class="col-3">
-                <q-file
-                  v-model="files"
-                  label="Anexos"
-                  outlined
-                  use-chips
-                  multiple
-                  append
-                />
-              </div>
-            </div>
+        <q-select standout="bg-blue text-white" v-model="idSubCategorias" :options="subCategorias" label="Sub-Categoria" />
 
-            <div class="row q-pb-sm">
-              <div class="col-3">
-                <div>
-                  <q-btn label="Reset" type="reset" color="primary" flat class="q-ml-sm" />
-                  <q-btn label="Submit" type="submit" color="primary"/>
-                </div>
-              </div>
-            </div>
+        <q-editor v-model="editor" min-height="5rem" />
 
-          </div>
-        </q-form>
+        <q-file
+          v-model="files"
+          label="Anexos"
+          outlined
+          use-chips
+          multiple
+          append
+        />
 
-  </q-page>
+        <q-btn label="Limpar" color="primary" class="full-width" rounded flat />
+
+        <q-btn label="Salvar" type="submit"  color="primary" class="full-width"  rounded />
+
+      </div>
+
+      </q-form>
+
+    </q-page>
 
 </template>
 
 <script>
 import { defineComponent, onMounted, ref } from 'vue'
-import categoriasService from 'src/services/categorias'
+import useNotify from 'src/composables/UseNotify'
 import { api } from 'boot/axios'
+import { columnsCategories } from 'src/composables/UseTable'
 
 export default defineComponent({
   name: 'IndexPage',
-  // components: { Abertura },
 
   setup () {
-    const { list } = categoriasService()
+    const { notifyError } = useNotify()
+    const categories = ref()
+    const loading = ref(true)
+
     const files = null
     const model = null
     const categoria = ref('Selecione a categoria')
@@ -125,40 +101,47 @@ export default defineComponent({
     const subCategorias = ref([])
     const editor = ref('What you see is <b>what</b> you get.')
 
+    const getCategorias = async () => {
+      try {
+        loading.value = true
+        const { data } = await api.get('categorias/master')
+        categories.value = data
+        console.log(categories.value)
+        // categorias.value = categories.value.map(categorias => {
+        //   return { value: categorias.id_categoria, label: categorias.ds_categoria }
+        // })
+        loading.value = false
+      } catch (error) {
+        notifyError(error.message)
+      }
+    }
+
     onMounted(() => {
       getCategorias()
     })
 
-    const getCategorias = async () => {
+    const getCategoriasSuperior = async (id) => {
       try {
-        const response = await list()
-        categorias.value = response
-        const { data } = await api.get('categorias/master')
+        const { data } = await api.get('categorias/superior/' + id)
+        console.log(data)
         categorias.value = data.map(categorias => {
           return { value: categorias.id_categoria, label: categorias.ds_categoria }
         })
-      } catch (e) {
-        console.error(e)
+      } catch (error) {
+        notifyError(error.message)
       }
     }
 
     const escolha = (escolha) => {
-      if (escolha === 'sistemas') {
-        abertura.value = 'Sistemas'
-        categoria.value = 'Selecione o Sistema'
-        // supCategorias = categorias.filter(superior => categorias.id_categoria_superior = null)
-      } else if (escolha === 'equip') {
-        abertura.value = 'Equipamentos/Softwares'
-        categoria.value = 'Selecione o Equip/Soft'
-      } else if (escolha === 'infra') {
-        abertura.value = 'Infraestrutura/Redes'
-        categoria.value = 'Selecione uma opção'
-      } else if (escolha === 'gerais') {
-        abertura.value = 'Serviços Gerais'
-        categoria.value = 'Selecione uma opção'
-      } else if (escolha === 'subcategoria') { /* empty */ }
+      console.log(escolha)
+      getCategoriasSuperior(escolha.id_categoria)
+      abertura.value = escolha.ds_categoria
     }
     return {
+      categories,
+      loading,
+      columnsCategories,
+
       categoria,
       categorias,
       supCategorias,
@@ -184,5 +167,6 @@ export default defineComponent({
   font-weight: bold
   font-size: 18px
   color: blue
-
+.example-item
+  width: 160px
 </style>

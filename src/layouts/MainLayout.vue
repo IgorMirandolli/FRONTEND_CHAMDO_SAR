@@ -1,35 +1,11 @@
 <template>
   <q-layout view="lHh Lpr lFf">
-    <q-header elevated>
-      <q-toolbar>
-        <q-btn
-          flat
-          dense
-          round
-          icon="menu"
-          aria-label="Menu"
-          @click="toggleLeftDrawer"
-        />
-
-        <q-toolbar-title>
-          Chamados
-        </q-toolbar-title>
-
-        <div>DEGTI {{ dataAtual  }}</div>
-      </q-toolbar>
-    </q-header>
-
     <q-drawer
       v-model="leftDrawerOpen"
       show-if-above
       bordered
     >
       <q-list>
-        <q-item-label
-          header
-        >
-          Chamados Links
-        </q-item-label>
 
         <EssentialLink
           v-for="link in essentialLinks"
@@ -50,51 +26,6 @@ import { defineComponent, ref } from 'vue'
 import EssentialLink from 'components/EssentialLink.vue'
 import moment from 'moment'
 
-const linksList = [
-  {
-    title: 'Stats',
-    caption: '',
-    icon: 'dashboard',
-    route: { name: 'stats' }
-  },
-  {
-    title: 'Abrir Chamados',
-    caption: '',
-    icon: 'question_answer',
-    route: { name: 'abrirChamado' }
-  },
-  {
-    title: 'Situação de Chamados',
-    caption: '',
-    icon: 'task',
-    route: { name: 'situacaoChamado' }
-  },
-  {
-    title: 'Gerenciar fila',
-    caption: '',
-    icon: 'manage_accounts',
-    route: { name: 'gerenciarFila' }
-  },
-  {
-    title: 'Priorizar Chamados',
-    caption: '',
-    icon: 'upload',
-    route: { name: 'priorizarChamado' }
-  },
-  {
-    title: 'Relatórios',
-    caption: '',
-    icon: 'file_copy',
-    route: { name: 'relatorios' }
-  },
-  {
-    title: 'Gerenciar Categorias',
-    caption: '',
-    icon: 'file_copy',
-    route: { name: 'categorias' }
-  }
-]
-
 export default defineComponent({
   name: 'MainLayout',
   components: {
@@ -104,6 +35,20 @@ export default defineComponent({
   setup () {
     const leftDrawerOpen = ref(false)
     const dataAtual = moment(Date.now()).format('DD/MM/YYYY')
+    const linksList = [
+      {
+        title: 'Abrir Chamados',
+        caption: '',
+        icon: 'question_answer',
+        routeName: 'chamados'
+      },
+      {
+        title: 'Situação de Chamados',
+        caption: '',
+        icon: 'task',
+        routeName: 'situacaoChamado'
+      }
+    ]
     return {
       essentialLinks: linksList,
       dataAtual,

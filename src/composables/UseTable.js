@@ -1,4 +1,4 @@
-const columnsCategories = [
+const columnsCategorias = [
   { name: 'img_url', align: 'left', label: 'Img', field: 'img_url', sortable: false },
   { name: 'name', align: 'left', label: 'Name', field: 'name', sortable: true },
   { name: 'last_renter', align: 'left', label: 'Locatário', field: 'last_renter', sortable: true },
@@ -7,5 +7,5 @@ const columnsCategories = [
 ]
 
 export {
-  columnsCategories
+  columnsCategorias
 }

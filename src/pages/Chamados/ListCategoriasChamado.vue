@@ -25,12 +25,13 @@
               <q-card class="q-my-sm" style="border-radius: 20px; width: 250px;">
                 <q-img
                   class="cursor-pointer"
-                  :src="props.row.img_url"
+                  :src="props.row.IMG_URL"
                   :ratio="5/3"
                   @click="abrirChamado(props.row)"
                 >
-                  <div class="absolute-bottom text-subtitle2 text-center">
-                    {{ props.row.ds_categoria }}
+                  <div style="background-color: rgba(0, 0, 0, 0.6);color: white;"
+                       class="absolute-bottom text-subtitle2 text-center">
+                    {{ props.row.DS_CATEGORIA }}
                   </div>
                 </q-img>
               </q-card>
@@ -64,7 +65,7 @@
                   input-debounce="0"
                   :options="colaboradores"
                   v-model="idColaborador"
-                  label="Colaborador"
+                  :label="$t('employee')"
                   @filter="filterFn"
                   emit-value
                   map-options                
@@ -83,14 +84,14 @@
               </q-select>    
 
               <q-select        
-                class="q-pb-sm"      
+                class="q-pb-none"      
                 v-model="selectedCategory"
                 :options="categorias"
-                option-label="ds_categoria"
-                option-value="id_categoria"
+                option-label="DS_CATEGORIA"
+                option-value="ID_CATEGORIA"
                 emit-value
                 map-options
-                label="Categoria"  
+                :label="$t('category')"  
                 dense      
                 rounded outlined
                 color="amber-9"
@@ -106,16 +107,15 @@
                 v-if="subCategorias.length"
                 v-model="selectedSubCategory"
                 :options="subCategorias"
-                option-label="ds_categoria"
-                option-value="id_categoria"
+                option-label="DS_CATEGORIA"
+                option-value="ID_CATEGORIA"
                 emit-value
                 map-options
-                label="Subcategoria"
+                :label="$t('sub_category')"  
                 dense
                 rounded
                 outlined
-                color="amber-9"
-                class="q-mt-sm"
+                color="amber-9"                
               >
                 <template v-slot:prepend>
                   <q-icon name="subdirectory_arrow_right" />
@@ -127,8 +127,9 @@
                 rounded
                 outlined
                 dense
+                style="border-radius: 20px;"
                 color="amber-9"
-                class="q-mb-md bg-blue-grey-2"
+                class="q-mb-sm bg-blue-grey-2"
                 min-height="10rem"
                 :content-style="{
                   backgroundColor: 'transparent',
@@ -145,7 +146,7 @@
               <q-file              
                 color="amber-9"
                 v-model="files"
-                label="Anexos"
+                :label="$t('attachments')"  
                 rounded outlined
                 dense
                 multiple
@@ -159,9 +160,8 @@
     
               </q-file>              
       
-              <q-btn label="Salvar" type="submit"  color="primary" class="full-width" v-close-popup rounded />
-    
-              <q-btn label="Sair" color="primary" class="full-width" rounded flat v-close-popup @click="cleanDialog" />
+              <q-btn :label="$t('save')" type="submit"  color="primary" class="full-width" v-close-popup rounded />    
+              <q-btn :label="$t('exit')" color="primary" class="full-width" rounded flat v-close-popup @click="cleanDialog" />
       
             </div>
       
@@ -178,9 +178,10 @@ import { useQuasar } from 'quasar'
 import useNotify from 'src/composables/UseNotify'
 import { columnsCategorias } from 'src/composables/UseTable'
 import { api } from 'boot/axios'
+import {useI18n} from "vue-i18n"
 import { useRouter } from 'vue-router'
 
-const { notifyError } = useNotify()
+const { notifyError, notifySuccess } = useNotify()
 const listCategorias = ref([])
 const $q = useQuasar()
 const router = useRouter()
@@ -201,12 +202,12 @@ const nameCategoria = ref(null)
 const colaborador = ref(null)
 const stringOptions = ref([]) 
 const files= ref([])
-
+const { t } = useI18n()
 
 onMounted(async () => {
   $q.loading.show()
   const validacao = {
-    token: '28211958347828700123580312950',
+    token: '29807631836249241753903997561',
     cd_colaborador: '15948'
     // token: route.query.dsTokenAppUsuario,
     // cd_colaborador: route.query.cdUsuario
@@ -221,6 +222,7 @@ onMounted(async () => {
       $q.localStorage.set('cd_colaborador', data[0].CD_COLABORADOR)
       $q.localStorage.set('nm_completo_colab', data[0].NM_COMPLETO_COLAB)
       $q.localStorage.set('cd_unorg', data[0].CD_UNORG)
+      $q.loading.hide()
     }
   } catch (error) {
     $q.loading.hide()
@@ -243,8 +245,8 @@ const getListCategorias = async (id) => {
 
 const abrirChamado = async (props) => {    
   showPreviewDialog.value = true
-  categorias.value = await getCategorias(props.id_categoria)    
-  nameCategoria.value = props.ds_categoria
+  categorias.value = await getCategorias(props.ID_CATEGORIA)    
+  nameCategoria.value = props.DS_CATEGORIA
   getColaboradores()    
   idColaborador.value = $q.localStorage.getItem('cd_colaborador')  
 }
@@ -309,9 +311,41 @@ const cleanDialog = async() => {
 
 const onSubmit = async() => {
   try {
+    $q.loading.show()
+    const chamado = {
+      DS_CHAMADO: form.value.editor,
+      CD_COLABORADOR_ABERTURA: $q.localStorage.getItem('cd_colaborador'),      
+      CD_COLABORADOR_RESPONSAVEL: idColaborador.value,      
+      ID_CATEGORIA: selectedSubCategory.value?selectedSubCategory.value:selectedCategory.value
+    }    
+    console.log(chamado)
+      // INSERINDO O CHAMADO    
+      const data  = await api.post('chamados/', chamado)      
+      // console.log(data.data.ID_CHAMADO)         
+
+    // INSERINDO AS IMAGENS DA PROPRIEDADE
+    if (files.value.length > 0) {
+
+      for (var i = 0; i < files.value.length; i++) {
+
+        const formData = new FormData()
+        formData.append('ID_CHAMADO', data.data.ID_CHAMADO)
+        formData.append('CD_COLABORADOR', $q.localStorage.getItem('cd_colaborador'))
+        formData.append('file', files.value[i]) // arquivo do input file
+  
+        await axios.post('anexos/', formData, {
+          headers: { 'Content-Type': 'multipart/form-data' }
+        })
+      }
+      
+    }
+    $q.loading.hide();
+    notifySuccess(t('success'))
+    showPreviewDialog.value = false
     
   } catch (error) {
-    
+    $q.loading.hide();
+    notifyError(error.message)    
   }
 }
 

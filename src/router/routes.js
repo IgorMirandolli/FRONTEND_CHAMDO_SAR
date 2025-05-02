@@ -15,7 +15,7 @@ const routes = [
     component: () => import('layouts/MainLayout.vue'),
     children: [
       { path: '', name: 'chamados', component: () => import('src/pages/Chamados/ListCategoriasChamado.vue') },
-      { path: 'abrirChamado/:id', name: 'abrirChamado', component: () => import('pages/Chamados/FormAbrirChamado.vue') }
+      { path: 'listChamados', name: 'listChamados', component: () => import('src/pages/Chamados/ListChamados.vue') }
     ]
   },
   {

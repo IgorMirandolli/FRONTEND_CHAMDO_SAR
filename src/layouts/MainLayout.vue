@@ -43,10 +43,10 @@ export default defineComponent({
         routeName: 'chamados'
       },
       {
-        title: 'Situação de Chamados',
+        title: 'Meus Chamados',
         caption: '',
         icon: 'task',
-        routeName: 'situacaoChamado'
+        routeName: 'listChamados'
       }
     ]
     return {

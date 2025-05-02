@@ -207,7 +207,7 @@ const { t } = useI18n()
 onMounted(async () => {
   $q.loading.show()
   const validacao = {
-    token: '29807631836249241753903997561',
+    token: '23330809594486039941129205765',
     cd_colaborador: '15948'
     // token: route.query.dsTokenAppUsuario,
     // cd_colaborador: route.query.cdUsuario
@@ -319,30 +319,26 @@ const onSubmit = async() => {
       ID_CATEGORIA: selectedSubCategory.value?selectedSubCategory.value:selectedCategory.value
     }    
     console.log(chamado)
-      // INSERINDO O CHAMADO    
-      const data  = await api.post('chamados/', chamado)      
-      // console.log(data.data.ID_CHAMADO)         
+    // INSERINDO O CHAMADO    
+    const data  = await api.post('chamados/', chamado)      
+    // console.log(data.data.ID_CHAMADO)         
 
     // INSERINDO AS IMAGENS DA PROPRIEDADE
-    if (files.value.length > 0) {
+    const formData = new FormData()
+    formData.append('ID_CHAMADO', data.data.ID_CHAMADO)
+    formData.append('CD_COLABORADOR', $q.localStorage.getItem('cd_colaborador'))
 
-      for (var i = 0; i < files.value.length; i++) {
-
-        const formData = new FormData()
-        formData.append('ID_CHAMADO', data.data.ID_CHAMADO)
-        formData.append('CD_COLABORADOR', $q.localStorage.getItem('cd_colaborador'))
-        formData.append('file', files.value[i]) // arquivo do input file
-  
-        await axios.post('anexos/', formData, {
-          headers: { 'Content-Type': 'multipart/form-data' }
-        })
-      }
-      
+    for (let i = 0; i < files.value.length; i++) {
+      formData.append('files', files.value[i]) // Atenção: o campo é 'files'
     }
+
+    await api.post('/anexos', formData, {
+      headers: { 'Content-Type': 'multipart/form-data' }      
+    })
     $q.loading.hide();
     notifySuccess(t('success'))
-    showPreviewDialog.value = false
-    
+    cleanDialog()
+    showPreviewDialog.value = false    
   } catch (error) {
     $q.loading.hide();
     notifyError(error.message)    

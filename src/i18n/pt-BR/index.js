@@ -10,5 +10,6 @@ export default {
   save: 'Salvar',
   back: 'Voltar',
   exit: 'Sair',
-
+  my_callings: 'Meus Chamados',
+  actions: 'Ações',
 }

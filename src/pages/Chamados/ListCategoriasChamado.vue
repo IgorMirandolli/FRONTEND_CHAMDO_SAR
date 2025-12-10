@@ -1,6 +1,6 @@
 <template>
   <q-page padding >
-    
+
     <div class="row justify-center">
 
       <q-table
@@ -44,15 +44,15 @@
 
     </div>
 
-    <q-dialog v-model="showPreviewDialog" persistent>      
+    <q-dialog v-model="showPreviewDialog" persistent>
 
-      <q-card class="q-mx-auto q-mt-md " style="min-width: 700px; border-radius: 20px"> 
+      <q-card class="q-mx-auto q-mt-md " style="min-width: 700px; border-radius: 20px">
         <div class="container q-mx-auto q-mt-md" style="max-width: 500px;">
 
           <h4 class="text-h6 text-primary text-center q-my-none">{{ nameCategoria }}</h4>
-          
+
           <q-form @submit.prevent="onSubmit">
-            <div class="q-mx-auto q-pa-md q-gutter-y-sm ">          
+            <div class="q-mx-auto q-pa-md q-gutter-y-sm ">
 
               <q-select
                   class="q-pb-none"
@@ -68,12 +68,12 @@
                   :label="$t('employee')"
                   @filter="filterFn"
                   emit-value
-                  map-options                
+                  map-options
               >
                 <template v-slot:prepend>
                   <q-icon name="map" />
                 </template>
-    
+
                 <template v-slot:no-option>
                   <q-item>
                     <q-item-section class="text-grey">
@@ -81,18 +81,18 @@
                     </q-item-section>
                   </q-item>
                 </template>
-              </q-select>    
+              </q-select>
 
-              <q-select        
-                class="q-pb-none"      
+              <q-select
+                class="q-pb-none"
                 v-model="selectedCategory"
                 :options="categorias"
                 option-label="DS_CATEGORIA"
                 option-value="ID_CATEGORIA"
                 emit-value
                 map-options
-                :label="$t('category')"  
-                dense      
+                :label="$t('category')"
+                dense
                 rounded outlined
                 color="amber-9"
                 @update:model-value="handleCategotyChange"
@@ -111,11 +111,11 @@
                 option-value="ID_CATEGORIA"
                 emit-value
                 map-options
-                :label="$t('sub_category')"  
+                :label="$t('sub_category')"
                 dense
                 rounded
                 outlined
-                color="amber-9"                
+                color="amber-9"
               >
                 <template v-slot:prepend>
                   <q-icon name="subdirectory_arrow_right" />
@@ -142,11 +142,11 @@
                   ['link']
                 ]"
               />
-      
-              <q-file              
+
+              <q-file
                 color="amber-9"
                 v-model="files"
-                :label="$t('attachments')"  
+                :label="$t('attachments')"
                 rounded outlined
                 dense
                 multiple
@@ -157,14 +157,14 @@
                 <template v-slot:prepend>
                   <q-icon name="mdi-attachment" />
                 </template>
-    
-              </q-file>              
-      
-              <q-btn :label="$t('save')" type="submit"  color="primary" class="full-width" v-close-popup rounded />    
+
+              </q-file>
+
+              <q-btn :label="$t('save')" type="submit"  color="primary" class="full-width" v-close-popup rounded />
               <q-btn :label="$t('exit')" color="primary" class="full-width" rounded flat v-close-popup @click="cleanDialog" />
-      
+
             </div>
-      
+
           </q-form>
         </div>
       </q-card>
@@ -200,7 +200,7 @@ const colaboradores = ref([])
 const idColaborador = ref(null)
 const nameCategoria = ref(null)
 const colaborador = ref(null)
-const stringOptions = ref([]) 
+const stringOptions = ref([])
 const files= ref([])
 const { t } = useI18n()
 
@@ -212,18 +212,18 @@ onMounted(async () => {
     // token: route.query.dsTokenAppUsuario,
     // cd_colaborador: route.query.cdUsuario
   }
-  try {        
-    const response = await api.post('validateToken/', validacao)    
-    if (response.data.msg === 'Não autorizado') {
-      window.location = response.data.url
-    } else {
+  try {
+    // const response = await api.post('validateToken/', validacao)
+    // if (response.data.msg === 'Não autorizado') {
+    //   window.location = response.data.url
+    // } else {
       getListCategorias()
-      const { data } = await api.get('colaborador/'+ validacao.cd_colaborador )                
-      $q.localStorage.set('cd_colaborador', data[0].CD_COLABORADOR)
-      $q.localStorage.set('nm_completo_colab', data[0].NM_COMPLETO_COLAB)
-      $q.localStorage.set('cd_unorg', data[0].CD_UNORG)
+      // const { data } = await api.get('colaborador/'+ validacao.cd_colaborador )
+      // $q.localStorage.set('cd_colaborador', data[0].CD_COLABORADOR)
+      // $q.localStorage.set('nm_completo_colab', data[0].NM_COMPLETO_COLAB)
+      // $q.localStorage.set('cd_unorg', data[0].CD_UNORG)
       $q.loading.hide()
-    }
+    // }
   } catch (error) {
     $q.loading.hide()
     console.log(error)
@@ -235,7 +235,7 @@ const getListCategorias = async (id) => {
   try {
     $q.loading.show()
     const { data } = await api.get('categoria-master/')
-    listCategorias.value = data    
+    listCategorias.value = data
     $q.loading.hide()
   } catch (error) {
     notifyError(error.message)
@@ -243,12 +243,12 @@ const getListCategorias = async (id) => {
   }
 }
 
-const abrirChamado = async (props) => {    
+const abrirChamado = async (props) => {
   showPreviewDialog.value = true
-  categorias.value = await getCategorias(props.ID_CATEGORIA)    
+  categorias.value = await getCategorias(props.ID_CATEGORIA)
   nameCategoria.value = props.DS_CATEGORIA
-  getColaboradores()    
-  idColaborador.value = $q.localStorage.getItem('cd_colaborador')  
+  getColaboradores()
+  idColaborador.value = $q.localStorage.getItem('cd_colaborador')
 }
 
 const filterFn = (val, update, abort) => {
@@ -295,7 +295,7 @@ const getCategorias = async (id) => {
     $q.loading.show()
     const { data } = await api.get('categoria-superior/'+ id)
     $q.loading.hide()
-    return data    
+    return data
   } catch (error) {
     notifyError(error.message)
     $q.loading.hide()
@@ -314,14 +314,14 @@ const onSubmit = async() => {
     $q.loading.show()
     const chamado = {
       DS_CHAMADO: form.value.editor,
-      CD_COLABORADOR_ABERTURA: $q.localStorage.getItem('cd_colaborador'),      
-      CD_COLABORADOR_RESPONSAVEL: idColaborador.value,      
+      CD_COLABORADOR_ABERTURA: $q.localStorage.getItem('cd_colaborador'),
+      CD_COLABORADOR_RESPONSAVEL: idColaborador.value,
       ID_CATEGORIA: selectedSubCategory.value?selectedSubCategory.value:selectedCategory.value
-    }    
+    }
     console.log(chamado)
-    // INSERINDO O CHAMADO    
-    const data  = await api.post('chamados/', chamado)      
-    // console.log(data.data.ID_CHAMADO)         
+    // INSERINDO O CHAMADO
+    const data  = await api.post('chamados/', chamado)
+    // console.log(data.data.ID_CHAMADO)
 
     // INSERINDO AS IMAGENS DA PROPRIEDADE
     const formData = new FormData()
@@ -333,15 +333,15 @@ const onSubmit = async() => {
     }
 
     await api.post('/anexos', formData, {
-      headers: { 'Content-Type': 'multipart/form-data' }      
+      headers: { 'Content-Type': 'multipart/form-data' }
     })
     $q.loading.hide();
     notifySuccess(t('success'))
     cleanDialog()
-    showPreviewDialog.value = false    
+    showPreviewDialog.value = false
   } catch (error) {
     $q.loading.hide();
-    notifyError(error.message)    
+    notifyError(error.message)
   }
 }
 

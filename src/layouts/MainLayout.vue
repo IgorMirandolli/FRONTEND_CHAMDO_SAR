@@ -6,7 +6,6 @@
       bordered
     >
       <q-list>
-
         <EssentialLink
           v-for="link in essentialLinks"
           :key="link.title"
@@ -22,7 +21,8 @@
 </template>
 
 <script>
-import { defineComponent, ref } from 'vue'
+import { defineComponent, ref, onMounted } from 'vue'
+import { useQuasar } from 'quasar'
 import EssentialLink from 'components/EssentialLink.vue'
 import moment from 'moment'
 
@@ -33,8 +33,18 @@ export default defineComponent({
   },
 
   setup () {
+    const $q = useQuasar()
     const leftDrawerOpen = ref(false)
     const dataAtual = moment(Date.now()).format('DD/MM/YYYY')
+
+    // 🔹 IMPLEMENTAÇÃO (não muda lógica)
+    onMounted(() => {
+      if (!$q.localStorage.getItem('CD_USUARIO')) {
+        // ID precisa existir na tabela USUARIOS
+        $q.localStorage.set('CD_USUARIO', 1)
+      }
+    })
+
     const linksList = [
       {
         title: 'Abrir Chamados',
@@ -49,6 +59,7 @@ export default defineComponent({
         routeName: 'listChamados'
       }
     ]
+
     return {
       essentialLinks: linksList,
       dataAtual,

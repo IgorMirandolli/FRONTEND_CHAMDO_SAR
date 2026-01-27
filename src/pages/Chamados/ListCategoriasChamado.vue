@@ -1,8 +1,7 @@
 <template>
-  <q-page padding >
+  <q-page padding>
 
     <div class="row justify-center">
-
       <q-table
         :rows="listCategorias"
         :columns="columnsCategorias"
@@ -14,64 +13,65 @@
         :rows-per-page-options="[0]"
       >
 
-      <template v-slot:item="props">
-        <transition
-          appear
-          enter-active-class="animated fadeInLeft"
-          leave-active-class="animated fadeOutRight"
-        >
-          <div class="q-gutter-md row justify-center">
-            <div class="q-px-sm col-xs-12">
-              <q-card class="q-my-sm" style="border-radius: 20px; width: 250px;">
-                <q-img
-                  class="cursor-pointer"
-                  :src="props.row.IMG_URL"
-                  :ratio="5/3"
-                  @click="abrirChamado(props.row)"
-                >
-                  <div style="background-color: rgba(0, 0, 0, 0.6);color: white;"
-                       class="absolute-bottom text-subtitle2 text-center">
-                    {{ props.row.DS_CATEGORIA }}
-                  </div>
-                </q-img>
-              </q-card>
+        <template v-slot:item="props">
+          <transition
+            appear
+            enter-active-class="animated fadeInLeft"
+            leave-active-class="animated fadeOutRight"
+          >
+            <div class="q-gutter-md row justify-center">
+              <div class="q-px-sm col-xs-12">
+                <q-card class="q-my-sm" style="border-radius: 20px; width: 250px;">
+                  <q-img
+                    class="cursor-pointer"
+                    :src="props.row.IMG_URL"
+                    :ratio="5/3"
+                    @click="abrirChamado(props.row)"
+                  >
+                    <div
+                      class="absolute-bottom text-subtitle2 text-center"
+                      style="background-color: rgba(0, 0, 0, 0.6); color: white;"
+                    >
+                      {{ props.row.DS_CATEGORIA }}
+                    </div>
+                  </q-img>
+                </q-card>
+              </div>
             </div>
-          </div>
-        </transition>
-      </template>
+          </transition>
+        </template>
 
       </q-table>
-
     </div>
 
     <q-dialog v-model="showPreviewDialog" persistent>
-
-      <q-card class="q-mx-auto q-mt-md " style="min-width: 700px; border-radius: 20px">
+      <q-card class="q-mx-auto q-mt-md" style="min-width: 700px; border-radius: 20px">
         <div class="container q-mx-auto q-mt-md" style="max-width: 500px;">
 
-          <h4 class="text-h6 text-primary text-center q-my-none">{{ nameCategoria }}</h4>
+          <h4 class="text-h6 text-primary text-center q-my-none">
+            {{ nameCategoria }}
+          </h4>
 
           <q-form @submit.prevent="onSubmit">
-            <div class="q-mx-auto q-pa-md q-gutter-y-sm ">
+            <div class="q-mx-auto q-pa-md q-gutter-y-sm">
 
+              <!-- USUÁRIOS -->
               <q-select
-                  class="q-pb-none"
-                  rounded outlined
-                  dense
-                  color="amber-9"
-                  use-input
-                  hide-selected
-                  fill-input
-                  input-debounce="0"
-                  :options="colaboradores"
-                  v-model="idColaborador"
-                  :label="$t('employee')"
-                  @filter="filterFn"
-                  emit-value
-                  map-options
+                rounded outlined dense
+                color="amber-9"
+                use-input
+                hide-selected
+                fill-input
+                input-debounce="0"
+                :options="colaboradores"
+                v-model="idColaborador"
+                :label="$t('employee')"
+                @filter="filterFn"
+                emit-value
+                map-options
               >
                 <template v-slot:prepend>
-                  <q-icon name="map" />
+                  <q-icon name="person" />
                 </template>
 
                 <template v-slot:no-option>
@@ -84,7 +84,6 @@
               </q-select>
 
               <q-select
-                class="q-pb-none"
                 v-model="selectedCategory"
                 :options="categorias"
                 option-label="DS_CATEGORIA"
@@ -96,13 +95,8 @@
                 rounded outlined
                 color="amber-9"
                 @update:model-value="handleCategotyChange"
-              >
-                <template v-slot:prepend>
-                    <q-icon name="mdi-checkbox-marked-outline" />
-                  </template>
-              </q-select>
+              />
 
-              <!-- SELECT DINÂMICO DE SUBCATEGORIAS -->
               <q-select
                 v-if="subCategorias.length"
                 v-model="selectedSubCategory"
@@ -113,59 +107,50 @@
                 map-options
                 :label="$t('sub_category')"
                 dense
-                rounded
-                outlined
+                rounded outlined
                 color="amber-9"
-              >
-                <template v-slot:prepend>
-                  <q-icon name="subdirectory_arrow_right" />
-                </template>
-              </q-select>
+              />
 
               <q-editor
                 v-model="form.editor"
                 rounded
                 outlined
                 dense
-                style="border-radius: 20px;"
+                min-height="10rem"
                 color="amber-9"
                 class="q-mb-sm bg-blue-grey-2"
-                min-height="10rem"
-                :content-style="{
-                  backgroundColor: 'transparent',
-                  padding: '8px',
-                  fontSize: '14px'
-                }"
-                :toolbar="[
-                  ['bold', 'italic', 'underline'],
-                  ['unordered', 'ordered'],
-                  ['link']
-                ]"
               />
 
               <q-file
                 color="amber-9"
                 v-model="files"
                 :label="$t('attachments')"
-                rounded outlined
-                dense
+                rounded outlined dense
                 multiple
                 append
                 use-chips
-                accept="*"
-                >
-                <template v-slot:prepend>
-                  <q-icon name="mdi-attachment" />
-                </template>
+              />
 
-              </q-file>
+              <q-btn
+                :label="$t('save')"
+                type="submit"
+                color="primary"
+                class="full-width"
+                rounded
+              />
 
-              <q-btn :label="$t('save')" type="submit"  color="primary" class="full-width" v-close-popup rounded />
-              <q-btn :label="$t('exit')" color="primary" class="full-width" rounded flat v-close-popup @click="cleanDialog" />
-
+              <q-btn
+                :label="$t('exit')"
+                color="primary"
+                class="full-width"
+                rounded
+                flat
+                v-close-popup
+                @click="cleanDialog"
+              />
             </div>
-
           </q-form>
+
         </div>
       </q-card>
     </q-dialog>
@@ -178,104 +163,54 @@ import { useQuasar } from 'quasar'
 import useNotify from 'src/composables/UseNotify'
 import { columnsCategorias } from 'src/composables/UseTable'
 import { api } from 'boot/axios'
-import {useI18n} from "vue-i18n"
-import { useRouter } from 'vue-router'
+import { useI18n } from 'vue-i18n'
 
 const { notifyError, notifySuccess } = useNotify()
-const listCategorias = ref([])
+const { t } = useI18n()
 const $q = useQuasar()
-const router = useRouter()
 
-///////////////////////////////////
+const listCategorias = ref([])
 const showPreviewDialog = ref(false)
 const categorias = ref([])
 const subCategorias = ref([])
 const selectedCategory = ref()
 const selectedSubCategory = ref()
-const form = ref({
-  editor: '',
-})
 
 const colaboradores = ref([])
 const idColaborador = ref(null)
-const nameCategoria = ref(null)
-const colaborador = ref(null)
 const stringOptions = ref([])
-const files= ref([])
-const { t } = useI18n()
 
-onMounted(async () => {
-  $q.loading.show()
-  const validacao = {
-    token: '23330809594486039941129205765',
-    cd_colaborador: '15948'
-    // token: route.query.dsTokenAppUsuario,
-    // cd_colaborador: route.query.cdUsuario
-  }
-  try {
-    // const response = await api.post('validateToken/', validacao)
-    // if (response.data.msg === 'Não autorizado') {
-    //   window.location = response.data.url
-    // } else {
-      getListCategorias()
-      // const { data } = await api.get('colaborador/'+ validacao.cd_colaborador )
-      // $q.localStorage.set('cd_colaborador', data[0].CD_COLABORADOR)
-      // $q.localStorage.set('nm_completo_colab', data[0].NM_COMPLETO_COLAB)
-      // $q.localStorage.set('cd_unorg', data[0].CD_UNORG)
-      $q.loading.hide()
-    // }
-  } catch (error) {
-    $q.loading.hide()
-    console.log(error)
-  }
-  $q.loading.hide()
+const form = ref({ editor: '' })
+const files = ref([])
+const nameCategoria = ref(null)
+
+onMounted(() => {
+  getListCategorias()
 })
 
-const getListCategorias = async (id) => {
+const getListCategorias = async () => {
   try {
-    $q.loading.show()
     const { data } = await api.get('categoria-master/')
-    listCategorias.value = data
-    $q.loading.hide()
+    listCategorias.value = Array.isArray(data) ? data : []
   } catch (error) {
     notifyError(error.message)
-    $q.loading.hide()
   }
 }
 
-const abrirChamado = async (props) => {
+const abrirChamado = async (categoria) => {
   showPreviewDialog.value = true
-  categorias.value = await getCategorias(props.ID_CATEGORIA)
-  nameCategoria.value = props.DS_CATEGORIA
-  getColaboradores()
-  idColaborador.value = $q.localStorage.getItem('cd_colaborador')
+  categorias.value = await getCategorias(categoria.ID_CATEGORIA)
+  nameCategoria.value = categoria.DS_CATEGORIA
+  getUsuarios()
 }
 
-const filterFn = (val, update, abort) => {
-  if (!val) {
-    update(() => {
-      colaboradores.value = stringOptions.value
-    })
-    return
-  }
-
-  const normalize = str => str.normalize('NFD').replace(/[\u0300-\u036f]/g, '').toLowerCase()
-
-  update(() => {
-    const needle = normalize(val)
-    colaboradores.value = stringOptions.value.filter(v =>
-      normalize(v.label).includes(needle)
-    )
-  })
-}
-
-const getColaboradores = async () => {
+const getUsuarios = async () => {
   try {
-    const { data } = await api.get('colaboradores/')
+    const { data } = await api.get('usuario')
 
-    const options = data.map(colab => ({
-      value: colab.CD_COLABORADOR,
-      label: colab.NM_COMPLETO_COLAB
+    const options = data.map(user => ({
+      value: user.CD_USUARIO,
+      label: user.NM_COMPLETO_USUARIO
     }))
 
     colaboradores.value = options
@@ -285,64 +220,78 @@ const getColaboradores = async () => {
   }
 }
 
-const handleCategotyChange = async (id_categoria) => {
-  selectedSubCategory.value = null
-  subCategorias.value = await getCategorias(id_categoria)
+const filterFn = (val, update) => {
+  if (!val) {
+    update(() => colaboradores.value = stringOptions.value)
+    return
+  }
+
+  const needle = val.toLowerCase()
+  update(() => {
+    colaboradores.value = stringOptions.value.filter(
+      v => v.label.toLowerCase().includes(needle)
+    )
+  })
 }
 
 const getCategorias = async (id) => {
   try {
-    $q.loading.show()
-    const { data } = await api.get('categoria-superior/'+ id)
-    $q.loading.hide()
+    const { data } = await api.get(`categoria-superior/${id}`)
     return data
   } catch (error) {
     notifyError(error.message)
-    $q.loading.hide()
+    return []
   }
 }
 
-const cleanDialog = async() => {
-  selectedCategory.value = null
-  subCategorias.value.length = 0
-  files.value = null
-  form.value.editor = ''
+const handleCategotyChange = async (id) => {
+  selectedSubCategory.value = null
+  subCategorias.value = await getCategorias(id)
 }
 
-const onSubmit = async() => {
+const cleanDialog = () => {
+  selectedCategory.value = null
+  selectedSubCategory.value = null
+  subCategorias.value = []
+  form.value.editor = ''
+  files.value = []
+}
+
+const onSubmit = async () => {
   try {
-    $q.loading.show()
+    // 1️⃣ cria o chamado
     const chamado = {
       DS_CHAMADO: form.value.editor,
-      CD_COLABORADOR_ABERTURA: $q.localStorage.getItem('cd_colaborador'),
-      CD_COLABORADOR_RESPONSAVEL: idColaborador.value,
-      ID_CATEGORIA: selectedSubCategory.value?selectedSubCategory.value:selectedCategory.value
-    }
-    console.log(chamado)
-    // INSERINDO O CHAMADO
-    const data  = await api.post('chamados/', chamado)
-    // console.log(data.data.ID_CHAMADO)
-
-    // INSERINDO AS IMAGENS DA PROPRIEDADE
-    const formData = new FormData()
-    formData.append('ID_CHAMADO', data.data.ID_CHAMADO)
-    formData.append('CD_COLABORADOR', $q.localStorage.getItem('cd_colaborador'))
-
-    for (let i = 0; i < files.value.length; i++) {
-      formData.append('files', files.value[i]) // Atenção: o campo é 'files'
+      ID_CATEGORIA: selectedSubCategory.value || selectedCategory.value,
+      CD_USUARIOS_ABERTURA: idColaborador.value
     }
 
-    await api.post('/anexos', formData, {
-      headers: { 'Content-Type': 'multipart/form-data' }
-    })
-    $q.loading.hide();
+    const { data } = await api.post('chamados', chamado)
+
+    const ID_CHAMADO = data.ID_CHAMADO
+
+    // 2️⃣ envia anexos
+    if (files.value && files.value.length) {
+      const formData = new FormData()
+      formData.append('ID_CHAMADO', ID_CHAMADO)
+      formData.append('CD_USUARIO', idColaborador.value)
+
+      files.value.forEach(file => {
+        // ⚠️ TEM que ser 'files'
+        formData.append('files', file)
+      })
+
+      await api.post('anexos', formData, {
+        headers: { 'Content-Type': 'multipart/form-data' }
+      })
+    }
+
     notifySuccess(t('success'))
     cleanDialog()
     showPreviewDialog.value = false
+
   } catch (error) {
-    $q.loading.hide();
-    notifyError(error.message)
+    notifyError(error.response?.data || error.message)
   }
 }
-
 </script>

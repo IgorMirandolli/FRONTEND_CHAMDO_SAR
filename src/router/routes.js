@@ -41,6 +41,12 @@ const routes = [
       },
 
       {
+        path: "meus-chamados",
+        name: "meusChamados",
+        component: () => import("src/pages/Chamados/MeusChamados.vue"),
+      },
+
+      {
         path: "chamado/:id",
         name: "detalheChamado",
         component: () => import("src/pages/Chamados/DetalheChamado.vue"),

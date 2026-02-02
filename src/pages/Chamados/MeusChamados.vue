@@ -134,9 +134,15 @@ onMounted(() => {
   getChamados();
 });
 
-const chamadosFiltrados = computed(() =>
-  chamados.value.filter((c) => c.ST_CHAMADO === filtroStatus.value),
-);
+const chamadosFiltrados = computed(() => {
+  if (!idColaborador.value) return [];
+
+  return chamados.value.filter(
+    (c) =>
+      c.ST_CHAMADO === filtroStatus.value &&
+      c.CD_USUARIOS_ABERTURA === idColaborador.value,
+  );
+});
 
 const getChamados = async () => {
   try {
